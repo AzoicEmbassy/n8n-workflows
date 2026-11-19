@@ -1,0 +1,264 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -544,
+        0
+      ],
+      "id": "9758ed12-b8ed-424b-b57e-dfecee3b583d",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3ugzQone0mF9RUrY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.snippet }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "Order",
+              "description": "If my mail is related to order than placed it in this categpry"
+            },
+            {
+              "category": "Query",
+              "description": "If my mail is realted to any questions or query than placed it in this category"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        -352,
+        0
+      ],
+      "id": "d1580ecd-ddc5-4fe9-bb95-0f949a4dec8c",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        -112,
+        192
+      ],
+      "id": "79ca5f2c-2c66-48c1-b130-de32254678fb",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "j5eM7eouMhkMBsB8",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "models/gemini-3-flash-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are my personal Gmail assistant Read the coming mails and prepare a professional reply for the coming email .This is my mail {{ $json.snippet }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        -32,
+        -128
+      ],
+      "id": "1f523a0d-e5cf-4064-a963-b5667f604190",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "j5eM7eouMhkMBsB8",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "Order Conformation",
+        "message": "={{ $json.content.parts[0].text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        336,
+        -128
+      ],
+      "id": "66250864-5608-4481-be4f-2202152ece6a",
+      "name": "Create a draft",
+      "webhookId": "06808fc7-557b-4534-ad52-16ceca5d6a5d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3ugzQone0mF9RUrY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "models/gemini-3-flash-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "Act as my personal assistant and answer to any of the customer's query. Related to price suggest them to visit my store. You are my personal Gmail assistant Read the coming mails and prepare a professional reply for the coming email . tell them that we don't accept returns. This is my mail"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        16,
+        96
+      ],
+      "id": "6341f3fb-e1ad-454e-9994-be2406b4b073",
+      "name": "Message a model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "j5eM7eouMhkMBsB8",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "Customer query",
+        "message": "={{ $json.content.parts[0].text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        384,
+        96
+      ],
+      "id": "04262a30-7cbf-4fcb-9285-5f14cd232a50",
+      "name": "Create a draft1",
+      "webhookId": "d7e60221-717c-4c2b-9054-b7898e2f1b2b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3ugzQone0mF9RUrY",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Create a draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Create a draft1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "3049be3b-fcf2-4c0e-8bf3-2f4047162af3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2f0afc2cd8d6465ca5397b46743ef4eaffec6aa2cc7cabcb81b78deb63878d4f"
+  },
+  "nodeGroups": [],
+  "id": "FDzXGmNdUvpzwC3W",
+  "tags": []
+}

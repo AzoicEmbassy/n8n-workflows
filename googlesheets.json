@@ -1,0 +1,167 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "jgjh",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "df3079a9-18b1-4af1-98dc-10d6947da445",
+      "name": "Webhook",
+      "webhookId": "516f39a7-8ee5-45dd-b4a3-6b4041000647"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "af60aa02-d0de-4d2f-a936-4d03b2be0c4e",
+              "name": "name",
+              "value": "={{ $json.body.name }}",
+              "type": "string"
+            },
+            {
+              "id": "9925d194-9ce5-4487-9f57-3db523481993",
+              "name": "email",
+              "value": "={{ $json.body.mail }}",
+              "type": "string"
+            },
+            {
+              "id": "5bc2d4b7-9e73-4c3d-a70b-8fea7ef11bff",
+              "name": "contact",
+              "value": "={{ $json.body.contact }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "f848e44c-edc1-4b7d-85ce-0fe568652f22",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1JdYp617Q1PSlhE7lkP8VLTQlcw0fJ2fzV0RiWcN0Lm8",
+          "mode": "list",
+          "cachedResultName": "file",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JdYp617Q1PSlhE7lkP8VLTQlcw0fJ2fzV0RiWcN0Lm8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JdYp617Q1PSlhE7lkP8VLTQlcw0fJ2fzV0RiWcN0Lm8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{ $json.name }}",
+            "email": "={{ $json.email }}",
+            "contact": "={{ $json.contact }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "contact",
+              "displayName": "contact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        0
+      ],
+      "id": "556ba1c7-4c5e-47d1-84ee-c83b150f7b30",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "QuLS0SBdRkemZF6u",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "5629254b-cdfb-445b-9b2a-3276d78b6103",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2f0afc2cd8d6465ca5397b46743ef4eaffec6aa2cc7cabcb81b78deb63878d4f"
+  },
+  "nodeGroups": [],
+  "id": "zbbylNgqwgKdcMC5",
+  "tags": []
+}
