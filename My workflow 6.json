@@ -1,0 +1,307 @@
+{
+  "name": "My workflow 6",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -416,
+        64
+      ],
+      "id": "8d96abbc-bf7f-44e3-9e74-babf598accb8",
+      "name": "When chat message received",
+      "webhookId": "72710847-1820-43c3-ac52-50751f184dcb"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a helpful assistant.\n\nThe user will ask about the weather.\n\nExtract ONLY the city name.\n\nExamples\n\nInput:\nWhat's the weather in Lahore?\n\nOutput:\nLahore\n\nInput:\nTell me today's weather in Karachi\n\nOutput:\nKarachi\n\nInput:\nWeather of Islamabad\n\nOutput:\nIslamabad\n\nOnly return the city name."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -144,
+        64
+      ],
+      "id": "cfd65bc6-8df2-4046-b565-d48ee9b15d0b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        -240,
+        288
+      ],
+      "id": "0384cc22-629d-4de8-9084-810c428ed315",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Pr4EOyLMYbK4iD8a",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -64,
+        288
+      ],
+      "id": "e6232201-7ff4-4291-a50f-eb2c3ac3b1e3",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "url": "https://geocoding-api.open-meteo.com/v1/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "count",
+              "value": "1"
+            },
+            {
+              "name": "language",
+              "value": "en"
+            },
+            {
+              "name": "output",
+              "value": "json"
+            },
+            {
+              "name": "name",
+              "value": "={{ $json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        192,
+        64
+      ],
+      "id": "7d8d94f9-664d-498d-9220-ee7afa4c5607",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7e5a95f5-9e67-4da5-8475-2e3260ea4cde",
+              "name": "results[0].name",
+              "value": "={{ $json.results[0].name }}",
+              "type": "string"
+            },
+            {
+              "id": "011b1d74-1270-4370-aba8-f4d2459f36cc",
+              "name": "results[0].latitude",
+              "value": "={{ $json.results[0].latitude }}",
+              "type": "number"
+            },
+            {
+              "id": "18ee9318-4bf2-41a5-a110-8df7d3a9de07",
+              "name": "results[0].longitude",
+              "value": "={{ $json.results[0].longitude }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        416,
+        64
+      ],
+      "id": "ee455660-5051-40a5-8be0-595fae1127cc",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "https://api.open-meteo.com/v1/forecast",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "city",
+              "value": "={{ $json.results[0].name }}"
+            },
+            {
+              "name": "latitude",
+              "value": "={{ $json.results[0].latitude }}"
+            },
+            {
+              "name": "longitude",
+              "value": "={{ $json.results[0].longitude }}"
+            },
+            {
+              "name": "current",
+              "value": "temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code"
+            },
+            {
+              "name": "time zone",
+              "value": "auto"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        640,
+        64
+      ],
+      "id": "3de751ca-1dd5-4f2d-b6c7-2065add0bb8a",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9a7bf7fe-b145-4ed2-a1ba-6a553619cd3e",
+              "name": "temperature",
+              "value": "={{ $json.current.temperature_2m }}",
+              "type": "number"
+            },
+            {
+              "id": "250747c7-790e-464b-818f-50a9be8b441d",
+              "name": "relative humidity",
+              "value": "={{ $json.current.relative_humidity_2m }}",
+              "type": "number"
+            },
+            {
+              "id": "632f63dc-696b-4e9b-a58e-2276124c9e9f",
+              "name": "wind speed",
+              "value": "={{ $json.current.wind_speed_10m }}",
+              "type": "number"
+            },
+            {
+              "id": "dec1d5ef-3ea2-4f77-866e-423835de4991",
+              "name": "timezone",
+              "value": "={{ $json.timezone_abbreviation }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        864,
+        64
+      ],
+      "id": "98dc732c-4d1e-4029-8bf7-03512c38964f",
+      "name": "Edit Fields1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "d58b4258-99ab-4015-a578-1bd2769e2760",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2f0afc2cd8d6465ca5397b46743ef4eaffec6aa2cc7cabcb81b78deb63878d4f"
+  },
+  "nodeGroups": [],
+  "id": "kndgmitHdJdRMXTt",
+  "tags": []
+}
